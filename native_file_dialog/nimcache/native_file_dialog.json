@@ -1,0 +1,25 @@
+{"compile":[
+],
+"link":[
+"/home/t0rmund/devel/native_dialogs_new/native_dialogs_new/nimcache/native_file_dialog.o",
+"/home/t0rmund/devel/native_dialogs_new/native_dialogs_new/nimcache/stdlib_system.o",
+"/home/t0rmund/devel/native_dialogs_new/native_dialogs_new/nimcache/unix_dialog.o",
+"/home/t0rmund/devel/native_dialogs_new/native_dialogs_new/nimcache/gtk2_glib2.o",
+"/home/t0rmund/devel/native_dialogs_new/native_dialogs_new/nimcache/gtk2_gtk2.o",
+"/home/t0rmund/devel/native_dialogs_new/native_dialogs_new/nimcache/gtk2_atk.o",
+"/home/t0rmund/devel/native_dialogs_new/native_dialogs_new/nimcache/gtk2_pango.o",
+"/home/t0rmund/devel/native_dialogs_new/native_dialogs_new/nimcache/gtk2_gdk2pixbuf.o",
+"/home/t0rmund/devel/native_dialogs_new/native_dialogs_new/nimcache/gtk2_gdk2.o",
+"/home/t0rmund/devel/native_dialogs_new/native_dialogs_new/nimcache/cairo_cairo.o",
+"/home/t0rmund/devel/native_dialogs_new/native_dialogs_new/nimcache/dialog_types.o",
+"/home/t0rmund/devel/native_dialogs_new/native_dialogs_new/nimcache/stdlib_os.o",
+"/home/t0rmund/devel/native_dialogs_new/native_dialogs_new/nimcache/stdlib_strutils.o",
+"/home/t0rmund/devel/native_dialogs_new/native_dialogs_new/nimcache/stdlib_parseutils.o",
+"/home/t0rmund/devel/native_dialogs_new/native_dialogs_new/nimcache/stdlib_math.o",
+"/home/t0rmund/devel/native_dialogs_new/native_dialogs_new/nimcache/stdlib_algorithm.o",
+"/home/t0rmund/devel/native_dialogs_new/native_dialogs_new/nimcache/stdlib_times.o",
+"/home/t0rmund/devel/native_dialogs_new/native_dialogs_new/nimcache/stdlib_posix.o",
+"/home/t0rmund/devel/native_dialogs_new/native_dialogs_new/nimcache/stdlib_ospaths.o"
+],
+"linkcmd": "gcc   -o /home/t0rmund/devel/native_dialogs_new/native_dialogs_new/native_file_dialog  /home/t0rmund/devel/native_dialogs_new/native_dialogs_new/nimcache/native_file_dialog.o /home/t0rmund/devel/native_dialogs_new/native_dialogs_new/nimcache/stdlib_system.o /home/t0rmund/devel/native_dialogs_new/native_dialogs_new/nimcache/unix_dialog.o /home/t0rmund/devel/native_dialogs_new/native_dialogs_new/nimcache/gtk2_glib2.o /home/t0rmund/devel/native_dialogs_new/native_dialogs_new/nimcache/gtk2_gtk2.o /home/t0rmund/devel/native_dialogs_new/native_dialogs_new/nimcache/gtk2_atk.o /home/t0rmund/devel/native_dialogs_new/native_dialogs_new/nimcache/gtk2_pango.o /home/t0rmund/devel/native_dialogs_new/native_dialogs_new/nimcache/gtk2_gdk2pixbuf.o /home/t0rmund/devel/native_dialogs_new/native_dialogs_new/nimcache/gtk2_gdk2.o /home/t0rmund/devel/native_dialogs_new/native_dialogs_new/nimcache/cairo_cairo.o /home/t0rmund/devel/native_dialogs_new/native_dialogs_new/nimcache/dialog_types.o /home/t0rmund/devel/native_dialogs_new/native_dialogs_new/nimcache/stdlib_os.o /home/t0rmund/devel/native_dialogs_new/native_dialogs_new/nimcache/stdlib_strutils.o /home/t0rmund/devel/native_dialogs_new/native_dialogs_new/nimcache/stdlib_parseutils.o /home/t0rmund/devel/native_dialogs_new/native_dialogs_new/nimcache/stdlib_math.o /home/t0rmund/devel/native_dialogs_new/native_dialogs_new/nimcache/stdlib_algorithm.o /home/t0rmund/devel/native_dialogs_new/native_dialogs_new/nimcache/stdlib_times.o /home/t0rmund/devel/native_dialogs_new/native_dialogs_new/nimcache/stdlib_posix.o /home/t0rmund/devel/native_dialogs_new/native_dialogs_new/nimcache/stdlib_ospaths.o  -lm -lrt   -ldl"
+}
