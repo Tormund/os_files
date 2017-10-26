@@ -15,8 +15,8 @@ else:
 when isMainModule:
     var di:DialogInfo
     di.title = "Test dialog"
-    di.folder = "/home/t0rmund/devel/some_mega_project"
+    di.folder = "C:\\Users\\tormund\\devel"
     di.kind = dkSaveFile
-    di.filters = @["*.json", "*.png"]
+    di.filters = @[(name:"JSON", ext:"*.json"),(name: "Picture", ext:"*.png")]
     di.extension = "rod"
     echo di.show()
