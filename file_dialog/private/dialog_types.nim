@@ -2,7 +2,7 @@ import os
 
 type
     DialogKind* = enum
-        dkSelectFile
+        dkOpenFile
         dkSaveFile
         dkSelectFolder
         dkCreateFolder

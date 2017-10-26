@@ -13,7 +13,7 @@ proc show*(di: DialogInfo): string =
     buttons[1] = (title: "Open", rType: RESPONSE_ACCEPT.int)
 
     case di.kind:
-    of dkSelectFile:
+    of dkOpenFile:
         action = TFileChooserAction.FILE_CHOOSER_ACTION_OPEN
     of dkSaveFile:
         action = TFileChooserAction.FILE_CHOOSER_ACTION_SAVE
