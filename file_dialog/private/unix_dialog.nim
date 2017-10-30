@@ -26,7 +26,6 @@ proc show*(di: DialogInfo): string =
         buttons[1].title = "Select"
 
     var dialog = file_chooser_dialog_new(di.title.cstring, nil, action, nil)
-    defer: dialog.destroy()
 
     for button in buttons:
         discard dialog.add_button(button.title.cstring, button.rType.cint)
@@ -49,12 +48,15 @@ proc show*(di: DialogInfo): string =
         for fi in filters:
             dialog.add_filter(fi)
 
-    if dialog.run() in [RESPONSE_ACCEPT, RESPONSE_YES, RESPONSE_APPLY]:
+    let res = dialog.run()
+    if res in [RESPONSE_ACCEPT, RESPONSE_YES, RESPONSE_APPLY]:
         let fileChooser = cast[PFileChooser](pointer(dialog))
         result = $fileChooser.get_filename()
         di.checkExtensionOnSave(result)
     else:
         result = nil
+
+    dialog.destroy()
 
     while events_pending() > 0:
         discard main_iteration()
