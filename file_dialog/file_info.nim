@@ -7,8 +7,8 @@ elif defined(windows):
     export win32_dialog
 
 elif defined(macosx) and not defined(ios):
-    import private/osx_dialog
-    export osx_dialog
+    import private/osx_file_info
+    export osx_file_info
 
 else:
     {.error: "Unsupported platform".}
