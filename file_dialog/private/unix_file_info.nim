@@ -1,96 +1,64 @@
-import osproc, os
-import gtk2
-import pure.mimetypes
+import logging, strutils
+import gtk2, gdk2
 
-# {.emit:"""
-#     #include <gio/gio.h>
-# """.}
-
-const defaultIconsPath = "/usr/share/icons"
-
+{.pragma: gtk, stdcall, dynlib: "libgtk-x11-2.0.so(|.0)".}
+{.pragma: gdk, stdcall, dynlib: "libgdk-x11-2.0.so(|.0)".}
 {.pragma: glib, stdcall, dynlib: "libgio-2.0.so(|.0)" .}
+
+# GTK/GDK bindings
+type GtkIconTheme {.importc.} = ptr object of RootObj
+# type GtkIconInfo {.importc.} = ptr object of RootObj
+type GError {.importc.} = ptr object of RootObj
+type GdkPixbuf {.importc.} = ptr object of RootObj
+
+# GIO bindings
 type GFile {.importc.} = ptr object of RootObj
-type GIcon {.importc.} = ptr object of RootObj
-type GFileIcon {.importc.} = ptr object of GIcon
-type GThemedIcon {.importc.} = ptr object of GIcon
 type GFileInfo {.importc.} = ptr object of RootObj
 type GCancellable {.importc.} = ptr object of RootObj
-type GError {.importc.} = ptr object of RootObj
-# type GFileAttributeMatcher {.importc.} = ptr object of RootObj
+type GIcon {.importc.} = ptr object of RootObj
 
+# GTK?GDK bindings
+proc icon_theme_get_for_screen(screen: PScreen): GtkIconTheme {.gtk, importc:"gtk_icon_theme_get_for_screen".}
+proc gtk_icon_theme_load_icon(theme: GtkIconTheme, iconame: cstring, icosize: cint, flags: cint, err: GError):GdkPixbuf {.gtk, importc.}
+proc gtk_icon_theme_has_icon(theme: GtkIconTheme, iconame: cstring): bool {.gtk, importc.}
+proc gdk_pixbuf_get_pixels(pb: GdkPixbuf):cstring {.gdk, importc.}
+proc gdk_pixbuf_get_width(buff: GdkPixbuf):cint {.gdk, importc.}
+proc gdk_pixbuf_get_height(buff: GdkPixbuf):cint {.gdk, importc.}
+
+
+# GIO bindings
 proc gfileForPath(path: cstring): GFile {.glib, importc:"g_file_new_for_path".}
-proc gfilePath(file: GFile): cstring {.glib, importc:"g_file_get_path".}
-proc gfileIconFile(file: GIcon):GFile {.glib, importc:"g_file_icon_get_file".}
-proc gfileIconNew(file: GFile): GFileIcon {.glib, importc:"g_file_icon_new".}
 proc gfileInfo(file: GFile, attr: cstring, flags: cint, can: GCancellable, err: GError): GFileInfo {.glib, importc:"g_file_query_info".}
-proc gfileInfoGetIcon(fi: GFileInfo): GIcon {.glib, importc:"g_file_info_get_icon".}
 proc giconToString(icon: GIcon):cstring {.glib, importc:"g_icon_to_string".}
-# proc gContentTypeGetIconName(t: cstring): cstring {.glib, importc: "g_content_type_get_generic_icon_name".}
-# proc gContentTypeFromMime(mime: cstring): cstring {.glib, importc: "g_content_type_from_mime_type".}
-# proc gfileAttrMatcherNew(attr: cstring): GFileAttributeMatcher {.glib, importc: "g_file_attribute_matcher_new".}
-# proc gfileAttrToString(attrmatch: GFileAttributeMatcher):cstring {.glib, importc: "g_file_attribute_matcher_to_string".}
-proc gfileInfoGetAttrString(fi: GFileInfo, key: cstring):cstring {.glib, importc: "g_file_info_get_attribute_byte_string".}
-proc gfileInfoListAttrs(fi: GFileInfo, patt: cstring):cstring {.glib, importc: "g_file_info_list_attributes".}
-proc gfileInfoGetAttrUint32(fi: GFileInfo, key: cstring):cstring {.glib, importc:"g_file_info_get_attribute_uint32".}
+proc gfileInfoGetIcon(fi: GFileInfo): GIcon {.glib, importc:"g_file_info_get_icon".}
 
-var mimeDB = newMimetypes()
+proc iconBitmapForFile*(path: string, width, heigth: int):seq[byte]=
+    let file = gfileForPath(path)
+    var err: GError
+    let fi = gfileInfo(file, "*", 0, nil, err)
+    if not err.isNil:
+        return
 
-proc getFileInfo(file: string):string=
-    let filePath = file
-    # var iconPath = ""
+    var gIcon = fi.gfileInfoGetIcon()
+    var strIcon = ($gIcon.giconToString()).split(" ")
+    echo strIcon
 
-    echo "paht ", file, " theme dir ", rc_get_theme_dir()
-    var gfile = gfileForPath(filePath.cstring)
-    echo gfile.isNil
-    var error: GError
-    var fi = gfileInfo(gfile, "*", 0, nil, error)
-    # echo gfileInfoListAttrs(fi, "thumbnail::*")
-    var thumb = gfileInfoGetAttrString(fi, "thumbnail::path")
-    result = $thumb
-    # let matcher = gfileAttrMatcherNew("thumbnail::path")
-    # result = $gfileAttrToString(matcher)
-    # echo "fi ", fi
-    var hasPreview = gfileInfoGetAttrUint32(fi, "filesystem::use-preview")
-    echo "haspreview ", hasPreview
-    var icon = gfileInfoGetIcon(fi)
-    echo "Icon str ", $giconToString(icon)
+    let displ = display_open(nil)
+    let screen = get_default_screen(displ)
+    let theme = icon_theme_get_for_screen(screen)
+    var kind = ""
+    for i in strIcon:
+        if gtk_icon_theme_has_icon(theme, i):
+            kind = i
+            break
+    err = nil
 
-    # var iconFile = gfileIconFile(icon)
-    # echo "iconfile is nil ", iconFile.isNil
-    # echo "path ", $gfilePath(iconFile)
+    let pixBuff = gtk_icon_theme_load_icon(theme, kind, width.cint, 0.cint, err)
+    let w = gdk_pixbuf_get_width(pixBuff).int
+    let h = gdk_pixbuf_get_height(pixBuff).int
+    let pixels = gdk_pixbuf_get_pixels(pixBuff)
 
-    # var fileIcon = gfileIconNew(gfile)
-    # echo "icon str 2 ", $giconToString((GIcon)fileIcon)
-
-    # var icon = gfileIconNew(gfile)
-    # var ifile = gfileIconFile(icon)
-    # echo ifile.isNil
-    # result = $gfilePath(ifile)
-
-    # {.emit:"""
-    #     //GError *error;
-    #     GFile *gfile = g_file_new_for_path(`filePath`);
-    #     //GFileInfo *file_info = g_file_query_info(gfile, "standard::*", 0, NULL, &error);
-    #     //const char *content_type = g_file_info_get_content_type(file_info);
-    #     //char *desc = g_content_type_get_description(content_type);
-    #     GFile *icoFile = g_file_icon_get_file(gfile);
-    #     `iconPath` = g_file_get_path(icoFile);
-    # """.}
-    # result = iconPath
-
-proc iconForFile*(file: string):string=
-    var ext = file.splitFile().ext
-    if ext.len > 0:
-        ext = ext.substr(1)
-    var mimetype = mimeDb.getMimetype(ext)
-    echo "mimetype ", mimetype
-    # var cont = gContentTypeFromMime(mimetype)
-    # result = $gContentTypeGetIconName(cont)
-    # result = mimetype
-
-    result = getFileInfo(file)
-
-
-#[
-    nim c --passC="`pkg-config --libs --cflags glib-2.0`" -r file_info.nim
-]#
+    if err.isNil and w + h > 0:
+        result = @[]
+        for i in 0..<(w * h)*4:
+            result.add(pixels[i].byte)

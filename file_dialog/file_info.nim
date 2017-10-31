@@ -12,14 +12,3 @@ elif defined(macosx) and not defined(ios):
 
 else:
     {.error: "Unsupported platform".}
-
-when isMainModule:
-    echo "Icon file ", iconForFile("/home/t0rmund/godot_testproj")
-    # echo "\n"
-    # echo "Icon for file ", iconForFile("/home/t0rmund/Block.mp4")
-    # echo "\n"
-    # echo "Icon for file ", iconForFile("/home/t0rmund/nimsuggest.log")
-    # echo "\n"
-    # echo "Icon for file ", iconForFile("/home/t0rmund/out_prod.profiles")
-    # echo "\n"
-    # echo "Icon for file ", iconForFile("/home/t0rmund/main.html")
