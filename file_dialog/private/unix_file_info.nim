@@ -41,7 +41,6 @@ proc iconBitmapForFile*(path: string, width, heigth: int):seq[byte]=
 
     var gIcon = fi.gfileInfoGetIcon()
     var strIcon = ($gIcon.giconToString()).split(" ")
-    echo strIcon
 
     let displ = display_open(nil)
     let screen = get_default_screen(displ)
