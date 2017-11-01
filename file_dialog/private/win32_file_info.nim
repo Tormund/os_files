@@ -34,7 +34,7 @@ proc scaledPixels(icon: ICONINFO, hicon: HICON, sw, sh, dw, dh: LONG): seq[byte]
     var hBmpDest = CreateCompatibleBitmap(hdcSource, dw, dh)
     var hBmpOldDest = (HBITMAP)SelectObject(hdcDest, hBmpDest)
     
-    SetStretchBltMode(hdcDest, COLORONCOLOR)
+    SetStretchBltMode(hdcDest, STRETCH_DELETESCANS)
     StretchBlt(hdcDest, 0, 0, dw, dh, hdcSource, 0, 0, sw, sh, SRCCOPY)
 
     var bmInfo: BITMAPINFO
@@ -53,7 +53,17 @@ proc scaledPixels(icon: ICONINFO, hicon: HICON, sw, sh, dw, dh: LONG): seq[byte]
         if GetDIBits(hdcDest, hBmpDest, 0.UINT, bi.biHeight.UINT, (PVOID)(addr bits[0]), &bmInfo, DIB_RGB_COLORS) == 0:
             return nil
 
-        result = bits
+        result = newSeq[byte](bits.len)
+        # flip bitmap verticaly and swap bgr into rgb
+        let comp = 4
+        for i in 0 ..< dh.int:
+            var st = i * dw.int * comp
+            let en = st + dw.int * comp
+
+            copyMem(addr result[i * dw.int * comp], addr bits[(dh.int - 1 - i) * dw.int * comp], dw.int * comp)
+            while st < en:
+                swap(result[st], result[st+2])
+                st += 4
 
     SelectObject(hdcSource, hBmpOldSource)
     SelectObject(hdcDest, hBmpOldDest)
@@ -64,8 +74,9 @@ proc scaledPixels(icon: ICONINFO, hicon: HICON, sw, sh, dw, dh: LONG): seq[byte]
 proc iconBitmapForFile*(path: string, width, heigth: int):seq[byte]=
     var sp = splitFile(path)
     var item: SHFILEINFO
-    let flags = SHGFI_SYSICONINDEX or SHGFI_USEFILEATTRIBUTES or SHGFI_ICON
-    if SHGetFileInfo(path, FILE_ATTRIBUTE_NORMAL.DWORD, &item, sizeof(IShellItem).UINT, flags.UINT).int != 0:
+    let flags = SHGFI_SYSICONINDEX # or SHGFI_USEFILEATTRIBUTES or SHGFI_ICON
+
+    if SHGetFileInfo(path, 0.DWORD, &item, sizeof(IShellItem).UINT, flags.UINT).int != 0:
         var ilist: ptr IImageList
         let err = SHGetImageList(SHIL_JUMBO, &IID_IImageList, &ilist)
         defer: ilist.Release()
