@@ -49,9 +49,7 @@ proc iconBitmapForFile*(path: string, w, h: int): seq[byte] =
 
     result = pixels
 
-    # for y in 0 ..< h:
-    #     for x in 0 ..< w:
-    #         let i = 4 * (w * y + x)
-    #         echo "pixels = ", pixels[i + 0], " ", pixels[i + 1], " ",pixels[i + 2], " ", pixels[i + 3]
-
-    discard stbi_write_png("/Users/rrenderr/Documents/a1.png".cstring, w.cint, h.cint, 4.cint, addr pixels[0], 0)
+proc openInDefaultApp*(path:string) =
+    let workspace = newWorkspace()
+    let appPath: cstring = path
+    {.emit: """ [`workspace` openFile: [NSString stringWithUTF8String: `appPath`]]; """.}
