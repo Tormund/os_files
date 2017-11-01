@@ -34,7 +34,7 @@ proc scaledPixels(icon: ICONINFO, hicon: HICON, sw, sh, dw, dh: LONG): seq[byte]
     var hBmpDest = CreateCompatibleBitmap(hdcSource, dw, dh)
     var hBmpOldDest = (HBITMAP)SelectObject(hdcDest, hBmpDest)
     
-    SetStretchBltMode(hdcDest, STRETCH_DELETESCANS)
+    SetStretchBltMode(hdcDest, COLORONCOLOR)
     StretchBlt(hdcDest, 0, 0, dw, dh, hdcSource, 0, 0, sw, sh, SRCCOPY)
 
     var bmInfo: BITMAPINFO
@@ -90,3 +90,6 @@ proc iconBitmapForFile*(path: string, width, heigth: int):seq[byte]=
                 let r = scaledPixels(iconInfo, hico, w.LONG, h.LONG, width.LONG, heigth.LONG)
                 result = r
 
+
+proc openInDefaultApp*(path:string)=
+    ShellExecute(0, nil, path, nil, nil, SW_SHOW)

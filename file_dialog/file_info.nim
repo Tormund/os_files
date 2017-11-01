@@ -15,3 +15,4 @@ else:
 
 when isMainModule:
     discard iconBitmapForFile("""C:\ыфвф""", 128, 128)
+    openInDefaultApp("""C:\Users\tormund\devel\falcon\rodplugin.nim""")
