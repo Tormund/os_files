@@ -63,6 +63,7 @@ proc showOpen(di: DialogInfo): string =
 
     if not cres.isNil:
         result = $cres
+        checkExtensionOnSave(di, result)
 
 proc showSave(di: DialogInfo): string =
     var dialog = newSavePanel()
