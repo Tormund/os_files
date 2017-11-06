@@ -49,8 +49,6 @@ proc showOpen(di: DialogInfo): string =
             [`dialog` setCanChooseDirectories:NO];
             [`dialog` setCanChooseFiles:YES];
         }
-        [`dialog` setCanChooseDirectories:NO];
-        [`dialog` setCanChooseFiles:YES];
 
         if ([`filters` count] > 0)
             [`dialog` setAllowedFileTypes: `filters`];
