@@ -64,7 +64,7 @@ Supported platforms:
         let image = imageWithBitmap(cast[ptr uint8](icon_bitmap_data), iconSize, iconSize, 4)
 ```
 
-## Open file with defaul application Example
+## Open file with default application Example
 
 Supported platforms:
 * X11
