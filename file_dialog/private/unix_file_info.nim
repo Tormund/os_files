@@ -62,6 +62,8 @@ proc iconBitmapForFile*(path: string, width, heigth: int):seq[byte]=
         for i in 0..<(w * h)*4:
             result.add(pixels[i].byte)
 
+    close(displ)
+
 import osproc
 proc openInDefaultApp*(path:string)=
     discard execCmd("xdg-open " & path)

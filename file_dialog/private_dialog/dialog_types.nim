@@ -1,5 +1,3 @@
-import os
-
 type
     DialogKind* = enum
         dkOpenFile
@@ -16,10 +14,12 @@ type
 
     DialogFilter* = tuple[name: string, ext: string]
 
-proc checkExtensionOnSave*(di: DialogInfo, res: var string)=
-    if di.kind == dkSaveFile and di.extension.len > 0:
-        let spr = res.splitFile()
-        if spr.ext.len <= 1:
-            if spr.ext.len == 0:
-                res.add('.')
-            res &= di.extension
+when not defined(js):
+    import os
+    proc checkExtensionOnSave*(di: DialogInfo, res: var string)=
+        if di.kind == dkSaveFile and di.extension.len > 0:
+            let spr = res.splitFile()
+            if spr.ext.len <= 1:
+                if spr.ext.len == 0:
+                    res.add('.')
+                res &= di.extension
