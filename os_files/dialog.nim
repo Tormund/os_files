@@ -10,18 +10,25 @@ elif defined(macosx) and not defined(ios):
     import private_dialog/osx_dialog
     export osx_dialog
 
-# elif defined(js) or defined(emscripten):
-#     import private_dialog/js_dialog
-#     export js_dialog
+elif defined(js) or defined(emscripten):
+    import private_dialog/js_dialog
+    export js_dialog
 
 else:
     {.error: "Unsupported platform".}
 
 when isMainModule:
+    import logging
+
     var di:DialogInfo
     di.title = "Test dialog"
     di.folder = "C:\\Users\\tormund\\devel"
-    di.kind = dkSaveFile
+    di.kind = dkOpenFile
     di.filters = @[(name:"JSON", ext:"*.json"),(name: "Picture", ext:"*.png")]
     di.extension = "rod"
-    echo di.show()
+    when defined(js) or defined(emscripten):
+        di.show do(data:string):
+            info data
+    else:
+        info di.show()
+
