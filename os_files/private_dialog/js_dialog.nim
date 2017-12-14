@@ -78,8 +78,41 @@ proc openFile(di: DialogInfo, cb:proc(files:string, data:string)) =
         input.click();
         """, cstring(filter), cast[pointer](ctx))
 
+const createA = """
+    var a = document.getElementById("__os_files_save_link");
+    if (a == null) {
+        var a = document.createElement("a");
+        a.style.position = "absolute";
+        a.style.top = "-1000px";
+        a.id = "__os_files_save_link";
+        document.body.appendChild(a);
+    }
+"""
+
+proc save*(di: DialogInfo, filename, data: string) =
+    let fn = filename.cstring
+    let d = data.cstring
+
+    when defined(js):
+        {.emit: createA.}
+        {.emit: """
+            var blob = new Blob([`d`], {type: "application/octet-stream"});
+            var url = URL.createObjectURL(blob);
+            a.href = url;
+            a.download = `fn`;
+            a.click();
+        """.}
+    elif defined(emscripten):
+        discard EM_ASM_INT(createA & """
+            var blob = new Blob([new Int8Array(HEAP8.buffer, $1, $2)], {type: "application/octet-stream"});
+            var url = URL.createObjectURL(blob);
+            a.href = url;
+            a.download = UTF8ToString($0);
+            a.click();
+        """, fn, d, cint(data.len))
+
 proc show*(di: DialogInfo, cb:proc(files:string, data:string)) =
     if di.kind == dkOpenFile:
         di.openFile(cb)
     else:
-        raise
+        discard

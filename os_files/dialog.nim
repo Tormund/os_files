@@ -27,7 +27,7 @@ when isMainModule:
     di.filters = @[(name:"JSON", ext:"*.json"),(name: "Picture", ext:"*.png")]
     di.extension = "rod"
     when defined(js) or defined(emscripten):
-        di.show do(data:string):
+        di.show do(files: string, data: string):
             info data
     else:
         info di.show()
