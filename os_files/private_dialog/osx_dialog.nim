@@ -38,7 +38,7 @@ proc showOpen(di: DialogInfo): string =
 
     var filters = newNSMutableArray[NSString](di.filters.len())
     for f in di.filters:
-        filters.add(toNSString(f.ext.replace("*", "public")))
+        filters.add(toNSString(f.ext.replace("*.", "")))
 
     {.emit: """
         if (`kind` == `dkSelectFolder`){
@@ -71,7 +71,7 @@ proc showSave(di: DialogInfo): string =
 
     var filters = newNSMutableArray[NSString](di.filters.len())
     for f in di.filters:
-        filters.add(toNSString(f.ext.replace("*", "public")))
+        filters.add(toNSString(f.ext.replace("*.", "")))
 
     {.emit: """
         [`dialog` setCanChooseFiles:YES];
