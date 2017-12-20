@@ -14,5 +14,5 @@ else:
     {.error: "Unsupported platform".}
 
 when isMainModule:
-    discard iconBitmapForFile("""C:\Users""", 128, 128)
-    openInDefaultApp("""C:\Users\tormund\devel\plugin.nim""")
+    discard iconBitmapForFile("""/home""", 128, 128)
+    openInDefaultApp("""/home""")

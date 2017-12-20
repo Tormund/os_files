@@ -1,5 +1,6 @@
 import logging, strutils
-import gtk2, gdk2
+import gtk2
+import gdk2 except `string`
 
 {.pragma: gtk, stdcall, dynlib: "libgtk-x11-2.0.so(|.0)".}
 {.pragma: gdk, stdcall, dynlib: "libgdk-x11-2.0.so(|.0)".}
