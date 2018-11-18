@@ -33,7 +33,7 @@ proc show*(di: DialogInfo): string =
     if di.folder.len > 0:
         discard dialog.set_current_folder(di.folder.cstring)
 
-    if not di.filters.isNil and di.filters.len > 0:
+    if not di.filters.len > 0 and di.filters.len > 0:
         var filters = newSeq[PFileFilter]()
         var all = file_filter_new()
         all.set_name("All")

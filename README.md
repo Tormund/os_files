@@ -60,7 +60,7 @@ Supported platforms:
 
     ## do something with bitmap data
     ## for example create image using Nimx
-    if not icon_bitmap_data.isNil:
+    if not icon_bitmap_data.len > 0:
         let image = imageWithBitmap(cast[ptr uint8](icon_bitmap_data), iconSize, iconSize, 4)
 ```
 

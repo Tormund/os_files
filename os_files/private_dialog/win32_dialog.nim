@@ -38,7 +38,7 @@ proc show*(di: DialogInfo): string =
             dialog.SetFolder(folderItem)
             defer: folderItem.Release()
 
-        if not di.filters.isNil and di.filters.len > 0:
+        if not di.filters.len > 0 and di.filters.len > 0:
             var filters = newSeq[COMDLG_FILTERSPEC]()
             var allTypes = newSeq[string]()
 
@@ -64,4 +64,3 @@ proc show*(di: DialogInfo): string =
 
     except:
         error "win32_dialog failed ", di, " Exception: ",  getCurrentExceptionMsg()
-

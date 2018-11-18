@@ -4,11 +4,11 @@ import winim
 converter pointerConverter(x: ptr): ptr PVOID = cast[ptr PVOID](x)
 
 const SHIL_JUMBO = 0x4
-type 
+type
     IImageList {.pure.} = object
         lpVtbl*: ptr IImageListVtbl
     IImageListVtbl {.pure, inheritable.} = object of IUnknownVtbl
-        Add*: pointer 
+        Add*: pointer
         ReplaceIcon*: pointer
         SetOverlayImage*: pointer
         Replace*: pointer
@@ -24,7 +24,8 @@ proc Draw*(self: ptr IImageList, p1: ptr IMAGELISTDRAWPARAMS):HRESULT {.inline, 
 proc SHGetImageList*(iImageList: INT, riid: REFIID, ppv: ptr PVOID): HRESULT {.winapi, dynlib: "shell32", importc.}
 
 proc scaledPixels(icon: ICONINFO, hicon: HICON, sw, sh, dw, dh: LONG): seq[byte] =
-    result = nil
+    result = @[]
+
     var hdcScreen = CreateDC("DISPLAY", nil, nil, nil)
     var hdcSource = CreateCompatibleDC(hdcScreen)
     var hBmpSource = icon.hbmColor
@@ -33,7 +34,7 @@ proc scaledPixels(icon: ICONINFO, hicon: HICON, sw, sh, dw, dh: LONG): seq[byte]
     var hdcDest = CreateCompatibleDC(hdcScreen)
     var hBmpDest = CreateCompatibleBitmap(hdcSource, dw, dh)
     var hBmpOldDest = (HBITMAP)SelectObject(hdcDest, hBmpDest)
-    
+
     SetStretchBltMode(hdcDest, COLORONCOLOR)
     StretchBlt(hdcDest, 0, 0, dw, dh, hdcSource, 0, 0, sw, sh, SRCCOPY)
 
@@ -41,7 +42,7 @@ proc scaledPixels(icon: ICONINFO, hicon: HICON, sw, sh, dw, dh: LONG): seq[byte]
     bmInfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER).DWORD
 
     if GetDIBits(hdcDest, hBmpDest, 0, 0, nil, addr bmInfo, DIB_RGB_COLORS) == 0:
-        return nil
+        return result
     else:
         let bi = bmInfo.bmiHeader
         assert(bi.biSizeImage.int > 0)
@@ -51,9 +52,9 @@ proc scaledPixels(icon: ICONINFO, hicon: HICON, sw, sh, dw, dh: LONG): seq[byte]
         bmInfo.bmiHeader.biBitCount = 32
 
         if GetDIBits(hdcDest, hBmpDest, 0.UINT, bi.biHeight.UINT, (PVOID)(addr bits[0]), &bmInfo, DIB_RGB_COLORS) == 0:
-            return nil
+            return result
 
-        result = newSeq[byte](bits.len)
+        result.setLen(bits.len)
         # flip bitmap verticaly and swap bgr into rgb
         let comp = 4
         for i in 0 ..< dh.int:
@@ -81,7 +82,7 @@ proc iconBitmapForFile*(path: string, width, heigth: int):seq[byte]=
         let err = SHGetImageList(SHIL_JUMBO, &IID_IImageList, &ilist)
         defer: ilist.Release()
         if err == S_OK:
-            var hico: HICON 
+            var hico: HICON
             ilist.GetIcon(item.iIcon, ILD_IMAGE, addr hico)
             var iconInfo:ICONINFO
             if GetIconInfo(hico, addr iconInfo) == TRUE:
