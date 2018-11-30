@@ -33,7 +33,7 @@ proc showOpen(di: DialogInfo): string =
     var dialog = newOpenPanel()
     let ctitle: cstring = di.title
     let kind = di.kind
-    let path: cstring = if di.folder.isNil: "" else: di.folder
+    let path: cstring = if di.folder.len == 0: "" else: di.folder
     var cres: cstring
 
     var filters = newNSMutableArray[NSString](di.filters.len())
@@ -66,7 +66,7 @@ proc showSave(di: DialogInfo): string =
     var dialog = newSavePanel()
     let ctitle: cstring = di.title
     let kind = di.kind
-    let path: cstring = if di.folder.isNil: "" else: di.folder
+    let path: cstring = if di.folder.len == 0: "" else: di.folder
     var cres: cstring
 
     var filters = newNSMutableArray[NSString](di.filters.len())
