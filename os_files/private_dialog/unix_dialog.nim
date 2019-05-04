@@ -54,7 +54,7 @@ proc show*(di: DialogInfo): string =
         result = $fileChooser.get_filename()
         di.checkExtensionOnSave(result)
     else:
-        result = nil
+        result = ""
 
     dialog.destroy()
 
