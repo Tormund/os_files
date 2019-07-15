@@ -1,5 +1,5 @@
 # Package
-version = "0.1.1"
+version = "0.1.2"
 author = "Tormund"
 description = """Native file dialogs (x11, windows, osx) with extension filters and predefined path.
     System file icons in any resolution (x11 with theme support, windows, osx).
@@ -7,6 +7,6 @@ description = """Native file dialogs (x11, windows, osx) with extension filters 
 
 license = "MIT"
 
-requires "https://github.com/Tormund/winim" #revert to winim after https://github.com/khchen/winim/pull/4 will be merged
+requires "winim >= 3.1.1"
 requires "gtk2"
 requires "jsbind"
