@@ -8,7 +8,6 @@ description = """Native file dialogs (x11, windows, osx) with extension filters 
 license = "MIT"
 
 requires "winim >= 3.1.1"
-requires "gtk2"
+requires "oldgtk3"
 requires "jsbind"
 requires "https://github.com/yglukhov/darwin"
-
