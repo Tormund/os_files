@@ -1,62 +1,67 @@
-import glib2
-import gtk2
+# import glib2
+import oldgtk3/[gtk, glib]
 import dialog_types
 export dialog_types
 
-nim_init()
+proc initCheckWithArgv*(): bool {.inline.} =
+    var
+      cmdLine{.importc.}: cstringArray
+      cmdCount{.importc.}: cint
+    gtk.initCheck(cmdCount, cmdLine).bool
 
 proc show*(di: DialogInfo): string =
-    var action: TFileChooserAction
+    discard initCheckWithArgv()
 
-    var buttons = newSeq[tuple[title:string, rType:int]](2)
-    buttons[0] = (title: "Cancel", rType: RESPONSE_CANCEL.int)
-    buttons[1] = (title: "Open", rType: RESPONSE_ACCEPT.int)
+    var action: FileChooserAction
+
+    var buttons = newSeq[tuple[title: string, rType: ResponseType]](2)
+    buttons[0] = (title: "Cancel", rType: ResponseType.CANCEL)
+    buttons[1] = (title: "Open", rType: ResponseType.ACCEPT)
 
     case di.kind:
     of dkOpenFile:
-        action = TFileChooserAction.FILE_CHOOSER_ACTION_OPEN
+        action = FileChooserAction.OPEN
     of dkSaveFile:
-        action = TFileChooserAction.FILE_CHOOSER_ACTION_SAVE
+        action = FileChooserAction.SAVE
         buttons[1].title = "Save"
     of dkSelectFolder:
-        action = TFileChooserAction.FILE_CHOOSER_ACTION_SELECT_FOLDER
+        action = FileChooserAction.SELECT_FOLDER
         buttons[1].title = "Select"
     else:
-        action = TFileChooserAction.FILE_CHOOSER_ACTION_CREATE_FOLDER
+        action = FileChooserAction.CREATE_FOLDER
         buttons[1].title = "Select"
 
-    var dialog = file_chooser_dialog_new(di.title.cstring, nil, action, nil)
-
+    var dialog = newFileChooserDialog(di.title.cstring, nil, action, nil)
     for button in buttons:
-        discard dialog.add_button(button.title.cstring, button.rType.cint)
+        discard dialog.add_button(button.title, button.rType.cint)
 
     if di.folder.len > 0:
-        discard dialog.set_current_folder(di.folder.cstring)
+        discard cast[FileChooser](dialog).setCurrentFolder(di.folder.cstring)
 
     if not di.filters.len > 0 and di.filters.len > 0:
-        var filters = newSeq[PFileFilter]()
-        var all = file_filter_new()
-        all.set_name("All")
+        var filters = newSeq[FileFilter]()
+        let all = newFileFilter()
+        all.setName("All")
         filters.add(all)
         for fi in di.filters:
-            var pfi = file_filter_new()
-            pfi.add_pattern(fi.ext.cstring)
-            all.add_pattern(fi.ext.cstring)
-            pfi.set_name(fi.name.cstring)
+            let pfi = newFileFilter()
+            pfi.addPattern(fi.ext.cstring)
+            all.addPattern(fi.ext.cstring)
+            pfi.setName(fi.name.cstring)
             filters.add(pfi)
 
         for fi in filters:
-            dialog.add_filter(fi)
+            cast[FileChooser](dialog).addFilter(fi)
 
     let res = dialog.run()
-    if res in [RESPONSE_ACCEPT, RESPONSE_YES, RESPONSE_APPLY]:
-        let fileChooser = cast[PFileChooser](pointer(dialog))
-        result = $fileChooser.get_filename()
+    if cast[ResponseType](res) in [ResponseType.ACCEPT, ResponseType.YES, ResponseType.APPLY]:
+        let fileChooser = cast[FileChooser](pointer(dialog))
+        result = $fileChooser.getFilename()
         di.checkExtensionOnSave(result)
     else:
         result = ""
 
     dialog.destroy()
 
-    while events_pending() > 0:
+    while events_pending():
         discard main_iteration()
