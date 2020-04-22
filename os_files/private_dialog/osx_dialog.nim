@@ -62,8 +62,6 @@ proc showSave(di: DialogInfo): string =
         filters.add(toNSString(f.ext.replace("*.", "")))
 
     {.emit: """
-        [`dialog` setCanChooseFiles:YES];
-
         if ([`filters` count] > 0)
             [`dialog` setAllowedFileTypes: (NSArray<NSString *> *)`filters`];
 

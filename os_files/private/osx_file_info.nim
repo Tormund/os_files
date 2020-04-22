@@ -23,31 +23,33 @@ converter toNSString*(s: string): NSString = NSStringWithString(s)
 proc iconBitmapForFile*(path: string, w, h: int): seq[byte] =
     let tt: cstring = path
     let workspace = newWorkspace()
-    var pixels = newSeq[byte](4 * w * h)
-    var data = addr pixels[0]
+    result = newSeq[byte](4 * w * h)
+    var data = addr result[0]
 
     {.emit: """
-        unsigned char* d = `data`;
-        NSImage* img = [`workspace` iconForFile: [NSString stringWithUTF8String: `tt`]];
+        NSString* sPath = [[NSString alloc] initWithUTF8String: `tt`];
+        NSImage* img = [`workspace` iconForFile: sPath];
+        [sPath release];
+        NSBitmapImageRep *bmp = [[NSBitmapImageRep alloc]
+                                initWithBitmapDataPlanes: &`data`
+                                pixelsWide: `w`
+                                pixelsHigh: `h`
+                                bitsPerSample: 8
+                                samplesPerPixel: 4
+                                hasAlpha: YES
+                                isPlanar: NO
+                                colorSpaceName: NSDeviceRGBColorSpace
+                                bytesPerRow: `w` * 4
+                                bitsPerPixel: 32];
 
-        // downscale
-        NSSize newSize = NSMakeSize(`w`/2, `h`/2);
-        NSImage *smallImage = [[[NSImage alloc] initWithSize: newSize] autorelease];
-        [smallImage lockFocus];
-        [img setSize: newSize];
-        [[NSGraphicsContext currentContext] setImageInterpolation:NSImageInterpolationHigh];
-        [img compositeToPoint:NSZeroPoint operation:NSCompositeCopy];
-        [smallImage unlockFocus];
-
-        // get bitmap
-        NSBitmapImageRep *bmp = [NSBitmapImageRep imageRepWithData:[smallImage TIFFRepresentation]];
-        memcpy(d, [bmp bitmapData], 4 * `w` * `h`);
-
-        NSLog(@" icon %d ", bmp.pixelsWide);
-
+        NSGraphicsContext *ctx = [NSGraphicsContext graphicsContextWithBitmapImageRep: bmp];
+        [NSGraphicsContext saveGraphicsState];
+        [NSGraphicsContext setCurrentContext: ctx];
+        [img drawInRect: NSMakeRect(0, 0, `w`, `h`) fromRect: NSZeroRect operation: NSCompositeCopy fraction: 1.0];
+        [ctx flushGraphics];
+        [NSGraphicsContext restoreGraphicsState];
+        [bmp release];
     """.}
-
-    result = pixels
 
 proc openInDefaultApp*(path:string) =
     let workspace = newWorkspace()
