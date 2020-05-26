@@ -3,14 +3,8 @@ import oldgtk3/[gtk, glib]
 import dialog_types
 export dialog_types
 
-proc initCheckWithArgv*(): bool {.inline.} =
-    var
-      cmdLine{.importc.}: cstringArray
-      cmdCount{.importc.}: cint
-    gtk.initCheck(cmdCount, cmdLine).bool
-
 proc show*(di: DialogInfo): string =
-    discard initCheckWithArgv()
+    discard gtk.initCheckWithArgv()
 
     var action: FileChooserAction
 
