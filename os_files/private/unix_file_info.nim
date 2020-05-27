@@ -5,8 +5,15 @@ import oldgtk3/glib except byte
 
 var theme: IconTheme
 
+proc initCheckWithArgv*(): bool {.inline.} =
+    # TODO: This should be moved to oldgtk package
+    var
+      cmdLine{.importc.}: cstringArray
+      cmdCount{.importc.}: cint
+    gtk.initCheck(cmdCount, cmdLine).bool
+
 proc iconBitmapForFile*(path: string, width, heigth: int):seq[byte]=
-    discard gtk.initCheckWithArgv()
+    discard initCheckWithArgv()
 
     let file = newFileForPath(path)
     var err: GError
