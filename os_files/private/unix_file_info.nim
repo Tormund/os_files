@@ -15,16 +15,6 @@ proc initCheckWithArgv*(): bool {.inline.} =
 proc iconBitmapForFile*(path: string, width, heigth: int):seq[byte]=
     discard initCheckWithArgv()
 
-    let file = newFileForPath(path)
-    var err: GError
-    let fi = queryInfo(file, "*", GFileQueryInfoFlags.NONE, nil, err)
-    if not err.isNil:
-        return
-
-    let gIcon = fi.getIcon()
-    let strIcon = ($gIcon.toString()).split(" ")
-    fi.objectUnref()
-
     if theme.isNil:
         let displ = display_open(nil)
         let screen = get_default_screen(displ)
@@ -33,24 +23,33 @@ proc iconBitmapForFile*(path: string, width, heigth: int):seq[byte]=
             close(displ)
             return
 
-    var kind = ""
-    for i in strIcon:
-        if theme.hasIcon(i):
-            kind = i
-            break
+    let file = newFileForPath(path)
+    var err: GError
+    let fi = queryInfo(file, "*", GFileQueryInfoFlags.NONE, nil, err)
+    file.objectUnref()
+    if not err.isNil:
+        return
 
-    let pixBuff = theme.loadIcon(kind, width.cint, cast[IconLookupFlags](0), err)
-    if err.isNil:
-        let w = pixBuff.getWidth().int
-        let h = pixBuff.getHeight().int
+    let gIcon = fi.getIcon()
 
-        if w + h > 0:
-            let pixels = pixBuff.getPixels()
-            let bufSize = w * h * 4
-            result = newSeq[byte](bufSize)
-            copyMem(addr result[0], pixels, bufSize)
+    let info = theme.lookupByGicon(gIcon, width.cint, cast[IconLookupFlags](0))
+    fi.objectUnref()
 
-        pixBuff.unref()
+    if not info.isNil:
+        let pixBuff = info.loadIcon(err)
+        info.objectUnref()
+
+        if err.isNil:
+            let w = pixBuff.getWidth().int
+            let h = pixBuff.getHeight().int
+
+            if w + h > 0:
+                let pixels = pixBuff.getPixels()
+                let bufSize = w * h * 4
+                result = newSeq[byte](bufSize)
+                copyMem(addr result[0], pixels, bufSize)
+
+            pixBuff.unref()
 
 import osproc
 proc openInDefaultApp*(path:string)=
