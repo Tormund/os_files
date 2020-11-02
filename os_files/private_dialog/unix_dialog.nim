@@ -39,7 +39,7 @@ proc show*(di: DialogInfo): string =
     if di.folder.len > 0:
         discard cast[FileChooser](dialog).setCurrentFolder(di.folder.cstring)
 
-    if not di.filters.len > 0 and di.filters.len > 0:
+    if di.filters.len > 0:
         var filters = newSeq[FileFilter]()
         let all = newFileFilter()
         all.setName("All")
