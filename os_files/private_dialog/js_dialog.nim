@@ -12,18 +12,18 @@ when defined(emscripten):
 
     proc nim_dialog_onLoaded(ctx: Ctx, data: string) {.EMSCRIPTEN_KEEPALIVE.} =
         GC_unref(ctx)
-        ctx.cb(nil, data)
+        ctx.cb("", data)
 
 proc openFile(di: DialogInfo, cb:proc(files:string, data:string)) =
     var filter:jsstring
 
-    if not di.filters.isNil:
+    if di.filters.len > 0:
         var filters = newSeq[string](di.filters.len)
         for i, fi in di.filters:
             filters[i] = fi.ext.substr(1)
         filter = filters.join(",")
     else:
-        filter = nil
+        filter = ""
 
     when defined(js):
         let onLoaded = proc(data: cstring)=
