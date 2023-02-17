@@ -3,7 +3,7 @@ import oldgtk3/[gtk, gio, gdk_pixbuf, gobject]
 import oldgtk3/gdk except string
 import oldgtk3/glib except byte
 
-var theme: IconTheme
+var theme {.threadvar.}: IconTheme
 
 proc initCheckWithArgv*(): bool {.inline.} =
     # TODO: This should be moved to oldgtk package

@@ -15,7 +15,7 @@ type
         AddMasked*: pointer
         Draw*: proc(self: ptr IImageList, pimldp: ptr IMAGELISTDRAWPARAMS):HRESULT {.stdcall.}
         Remove*: pointer
-        GetIcon*: proc(self: ptr IImageList, p1: INT, p2: UINT, p3: ptr HICON):HRESULT {.stdcall.}
+        GetIcon*: proc(self: ptr IImageList, p1: INT, p2: UINT, p3: ptr HICON):HRESULT {.stdcall, gcsafe.}
 
 converter winim_converter_IImageList*(x: ptr IImageList): ptr IUnknown = cast[ptr IUnknown](x)
 proc QueryInterface*(self: ptr IImageList, P1: REFIID, P2: ptr PVOID): HRESULT {.inline, discardable.} = self.lpVtbl.QueryInterface(self, P1, P2)
@@ -72,7 +72,7 @@ proc scaledPixels(icon: ICONINFO, hicon: HICON, sw, sh, dw, dh: LONG): seq[byte]
     DeleteDC(hdcDest)
     DeleteDC(hdcScreen)
 
-proc iconBitmapForFile*(path: string, width, heigth: int):seq[byte]=
+proc iconBitmapForFile*(path: string, width, heigth: int):seq[byte] =
     var sp = splitFile(path)
     var item: SHFILEINFO
     let flags = SHGFI_SYSICONINDEX # or SHGFI_USEFILEATTRIBUTES or SHGFI_ICON
