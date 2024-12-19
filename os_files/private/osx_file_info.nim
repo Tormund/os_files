@@ -1,5 +1,5 @@
-import strutils
-import nimx.write_image_impl
+import darwin / objc / runtime
+import darwin / foundation
 
 {.passL: "-framework Foundation".}
 {.passL: "-framework AppKit".}
@@ -7,12 +7,6 @@ import nimx.write_image_impl
 type NSWorkspace {.importobjc: "NSWorkspace*", header: "<AppKit/AppKit.h>", incompleteStruct.} = object
 
 {.pragma: objc, header: "<Foundation/Foundation.h>", nodecl.}
-type NSObject* {.objc, importobjc, final.} = ptr object {.inheritable.}
-type NSString* {.objc, importobjc, final.} = ptr object of NSObject
-type NSArrayAbstract* {.objc, importc: "NSArray", final.} = ptr object of NSObject
-type NSArray*[T] = ptr object of NSArrayAbstract
-type NSMutableArray*[T] = ptr object of NSArray[T]
-type NSMutableArrayAbstract* {.objc, importc: "NSMutableArray", final.} = ptr object of NSArrayAbstract
 
 proc newWorkspace: NSWorkspace {.importobjc: "NSWorkspace sharedWorkspace", nodecl.}
 
